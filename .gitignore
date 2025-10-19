@@ -1,0 +1,134 @@
+# =========================
+# 🌐 GERAL
+# =========================
+*.log
+*.tar.gz
+*.zip
+*.bak
+*.tmp
+*.swp
+*.DS_Store
+Thumbs.db
+
+# =========================
+# 🧠 PYTHON / DJANGO
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.so
+*.egg-info/
+*.egg
+*.sqlite3
+*.db
+*.db-journal
+db.sqlite3
+htmlcov/
+coverage/
+.coverage
+.coverage.*
+.pytest_cache/
+pytest.ini
+.pytest_cache/
+*.pytest_cache/
+*.pytest_cache
+*.cover
+*.py,cover
+*.spec
+*.idea/
+*.vscode/
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+backend/venv/
+backend/env/
+
+# Django stuff
+*.log
+local_settings.py
+backend/staticfiles/
+media/
+staticfiles/
+static/
+
+# =========================
+# ⚛️ REACT / FRONTEND
+# =========================
+panel_frontend/node_modules/
+panel_frontend/dist/
+panel_frontend/.vite/
+panel_frontend/.cache/
+panel_frontend/.eslintcache
+panel_frontend/.parcel-cache/
+panel_frontend/.next/
+panel_frontend/build/
+panel_frontend/.nuxt/
+panel_frontend/.vercel/
+panel_frontend/.turbo/
+pnpm-lock.yaml
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env.*
+
+# =========================
+# 🧰 VS CODE / EDITOR
+# =========================
+.vscode/
+.history/
+*.code-workspace
+
+# =========================
+# 🪟 WINDOWS / SISTEMA
+# =========================
+desktop.ini
+ehthumbs.db
+$RECYCLE.BIN/
+start_project.bat
+
+# =========================
+# 🧪 TESTES E MOCKS
+# =========================
+mock_*.py
+test_*.py
+*.pytest_cache/
+*.tox/
+.tox/
+.cache/
+.coveragerc
+.nox/
+.pyre/
+.mypy_cache/
+.pytype/
+.dmypy.json
+.dmypy.json
+
+# =========================
+# 📦 ARQUIVOS GERADOS
+# =========================
+*.tar.gz
+*.gz
+*.tgz
+*.rar
+*.zip
+*.7z
+*.bak
+*.old
+*.orig
+
+# =========================
+# 🔒 OUTROS
+# =========================
+*.pem
+*.crt
+*.key
+*.lock

@@ -1,0 +1,38 @@
+/* Fundo */
+.background_blur {
+  backdrop-filter: blur(2px);
+  background-color: #00000073;
+}
+/* Header */
+.fixar_header {
+  position: sticky;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 40;
+}
+/* Main Content */
+
+/* Layout  */
+@media (min-width: 1023px) {
+  .fixed_menu_top {
+    position: sticky;
+    top: 74px;
+    z-index: 40;
+  }
+}
+@media (max-width: 1023px) {
+  .fixed_menu_top {
+    top: 74px;
+    z-index: 40;
+  }
+}
+
+@media (max-width: 500px) {
+  .content_title_screen_mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+}
