@@ -1,7 +1,13 @@
 # 🧩 Painel de Aprendizado — Meus Templates
 
 Um painel interativo desenvolvido para **organizar e criar templates de aprendizado**, com foco em **tecnologias, etapas e visualização em tempo real**.  
-O projeto foi aprimorado com **novos modais**, **validação de dados**, **design responsivo** e **organização do código**, integrando **React (Frontend)** e **Django (Backend)**.
+O projeto foi aprimorado com **novos modais**, **validação de dados**, **design responsivo** e **organização do código**, integrando **React (Frontend)** e **Django (Backend)**. <br>
+
+<img width="202" height="447" alt="image" src="https://github.com/user-attachments/assets/732ec30b-931d-4469-a052-6e5a4cbcbbe3" /> <img width="203" height="443" alt="image" src="https://github.com/user-attachments/assets/15aa76b3-272a-4969-9c41-9a80c7ccbd22" /> <img width="202" height="449" alt="image" src="https://github.com/user-attachments/assets/512ef04e-202c-42df-9776-1cb91af43f36" /> <img width="205" height="445" alt="image" src="https://github.com/user-attachments/assets/85168e7a-956f-49ae-ad3c-0a22c15f3b99" />
+
+
+
+
 
 ---
 
@@ -198,7 +204,4 @@ O **Painel de Aprendizado** agora possui uma base sólida, modular e escalável.
 As melhorias aplicadas criam um ambiente ideal para aprendizado, criação e gestão de templates técnicos, com uma **interface moderna e fluída**.  
 O projeto está pronto para evoluir em direção a um sistema completo de acompanhamento de aprendizado e produtividade.
 
-![alt text](image-2.png)
-![alt text](image.png)
-![alt text](image-3.png)
-![alt text](image-1.png)
+
