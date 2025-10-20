@@ -197,3 +197,8 @@ npm run dev -- --host 0.0.0.0 --port 5173
 O **Painel de Aprendizado** agora possui uma base sólida, modular e escalável.  
 As melhorias aplicadas criam um ambiente ideal para aprendizado, criação e gestão de templates técnicos, com uma **interface moderna e fluída**.  
 O projeto está pronto para evoluir em direção a um sistema completo de acompanhamento de aprendizado e produtividade.
+
+![alt text](image-2.png)
+![alt text](image.png)
+![alt text](image-3.png)
+![alt text](image-1.png)
