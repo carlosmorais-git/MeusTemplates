@@ -67,7 +67,6 @@ const Layout = ({ children, currentPage, onPageChange }) => {
 
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: Home },
-    { id: "technologies", label: "Tecnologias", icon: Brain },
     { id: "templates", label: "Templates", icon: BookOpen },
     {
       id: "projects",
@@ -83,6 +82,11 @@ const Layout = ({ children, currentPage, onPageChange }) => {
   };
   const handleTabClick = (pageId) => {
     onPageChange(pageId);
+  };
+  //  logout apiService.logout()
+  const logoutUser = async () => {
+    await apiService.logout();
+    window.location.reload();
   };
 
   return (
@@ -119,11 +123,7 @@ const Layout = ({ children, currentPage, onPageChange }) => {
 
           <div className="flex items-center space-x-2">
             {/* logout */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => apiService.logout()}
-            >
+            <Button variant="ghost" size="sm" onClick={logoutUser}>
               <LogOut className="h-4 w-4" />
             </Button>
           </div>

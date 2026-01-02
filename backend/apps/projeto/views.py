@@ -53,7 +53,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         guide_content = f"# Guia: {project.name}\n\n"
         guide_content += f"**Projeto:** {project.name}\n"
         guide_content += f"**Template:** {project.template.name}\n"
-        guide_content += f"**Tecnologia:** {project.template.technology.name}\n"
+        guide_content += f"**Tecnologia:** {project.template.technology}\n"
         guide_content += f"**Status:** {project.status}\n"
         guide_content += f"**Progresso:** {project.progress_percentage}%\n\n"
         if project.description:

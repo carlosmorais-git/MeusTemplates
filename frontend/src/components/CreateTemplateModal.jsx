@@ -23,25 +23,15 @@ const CreateTemplateModal = ({ isOpen, onClose, onTemplateCreated }) => {
     },
   ]);
 
-  const [technologies, setTechnologies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentTag, setCurrentTag] = useState("");
   const [previewMode, setPreviewMode] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      loadTechnologies();
+      resetForm();
     }
   }, [isOpen]);
-
-  const loadTechnologies = async () => {
-    try {
-      const data = await apiService.getTechnologies();
-      setTechnologies(data.results || data);
-    } catch (error) {
-      console.error("Erro ao carregar tecnologias:", error);
-    }
-  };
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({
@@ -162,7 +152,7 @@ const CreateTemplateModal = ({ isOpen, onClose, onTemplateCreated }) => {
         return;
       }
 
-      if (!formData.technology) {
+      if (!formData.technology || !formData.technology.trim()) {
         alert("Tecnologia é obrigatória");
         return;
       }
@@ -175,7 +165,7 @@ const CreateTemplateModal = ({ isOpen, onClose, onTemplateCreated }) => {
       // Preparar dados para envio
       const templateData = {
         ...formData,
-        technology_id: formData.technology, // campo esperado pelo backend
+        technology: formData.technology, // now plain string
         steps: steps.map((step) => ({
           ...step,
           code_snippets: step.code_snippets.filter((snippet) =>
@@ -284,22 +274,9 @@ const CreateTemplateModal = ({ isOpen, onClose, onTemplateCreated }) => {
                   {formData.description || "Descrição do template"}
                 </p>
                 <div className="flex items-center space-x-2">
-                  {technologies.find(
-                    (t) => t.id.toString() === formData.technology
-                  ) && (
-                    <Badge variant="secondary">
-                      {
-                        technologies.find(
-                          (t) => t.id.toString() === formData.technology
-                        ).icon
-                      }{" "}
-                      {
-                        technologies.find(
-                          (t) => t.id.toString() === formData.technology
-                        ).name
-                      }
-                    </Badge>
-                  )}
+                  {formData.technology ? (
+                    <Badge variant="secondary">{formData.technology}</Badge>
+                  ) : null}
                   {formData.tags.map((tag) => (
                     <Badge key={tag} variant="outline">
                       {tag}
@@ -377,21 +354,16 @@ const CreateTemplateModal = ({ isOpen, onClose, onTemplateCreated }) => {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Tecnologia *
                     </label>
-                    <select
+                    <input
+                      type="text"
                       value={formData.technology}
                       onChange={(e) =>
                         handleInputChange("technology", e.target.value)
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Ex: React, Django, Node"
                       required
-                    >
-                      <option value="">Selecione uma tecnologia</option>
-                      {technologies.map((tech) => (
-                        <option key={tech.id} value={tech.id}>
-                          {tech.icon} {tech.name}
-                        </option>
-                      ))}
-                    </select>
+                    />
                   </div>
                 </div>
 

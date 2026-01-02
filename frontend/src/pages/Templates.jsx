@@ -8,7 +8,6 @@ import apiService from "../services/api";
 
 const Templates = ({ onNavigate, params = {} }) => {
   const [templates, setTemplates] = useState([]);
-  const [technologies, setTechnologies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTechnology, setSelectedTechnology] = useState(
@@ -16,19 +15,22 @@ const Templates = ({ onNavigate, params = {} }) => {
   );
   const [showCreateModal, setShowCreateModal] = useState(false);
 
+  // Garantir que `templates` seja sempre um array ao consumir
+  const templatesArr = Array.isArray(templates) ? templates : [];
+
   useEffect(() => {
     loadData();
   }, []);
 
   const loadData = async () => {
     try {
-      const [templatesData, technologiesData] = await Promise.all([
-        apiService.getTemplates({ technology: selectedTechnology }),
-        apiService.getTechnologies(),
-      ]);
-
-      setTemplates(templatesData.results || templatesData);
-      setTechnologies(technologiesData.results || technologiesData);
+      const templatesData = await apiService.getTemplates();
+      const list = Array.isArray(templatesData?.results)
+        ? templatesData.results
+        : Array.isArray(templatesData)
+        ? templatesData
+        : [];
+      setTemplates(list);
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
     } finally {
@@ -52,15 +54,7 @@ const Templates = ({ onNavigate, params = {} }) => {
     }
   };
 
-  const handleToggleFavorite = async (template) => {
-    try {
-      await apiService.favoriteTemplate(template.id);
-      // Recarregar templates para atualizar o status de favorito
-      loadData();
-    } catch (error) {
-      console.error("Erro ao favoritar template:", error);
-    }
-  };
+  // Favorites removed from backend; no longer used.
 
   const handleExportMarkdown = async (template) => {
     try {
@@ -83,12 +77,18 @@ const Templates = ({ onNavigate, params = {} }) => {
   const handleTechnologyFilter = async (technologyId) => {
     setSelectedTechnology(technologyId);
     setLoading(true);
-
     try {
-      const templatesData = await apiService.getTemplates({
-        technology: technologyId || undefined,
-      });
-      setTemplates(templatesData.results || templatesData);
+      // Filtrar client-side já que não temos endpoint de technologies
+      const allTemplates = await apiService.getTemplates();
+      const all = Array.isArray(allTemplates?.results)
+        ? allTemplates.results
+        : Array.isArray(allTemplates)
+        ? allTemplates
+        : [];
+      const list = all.filter((t) =>
+        technologyId ? String(t.technology) === String(technologyId) : true
+      );
+      setTemplates(list);
     } catch (error) {
       console.error("Erro ao filtrar templates:", error);
     } finally {
@@ -103,12 +103,16 @@ const Templates = ({ onNavigate, params = {} }) => {
     loadData();
   };
 
-  const filteredTemplates = templates.filter(
-    (template) =>
-      template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      template.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      template.technology.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredTemplates = templatesArr.filter((template) => {
+    const name = (template.name || "").toLowerCase();
+    const description = (template.description || "").toLowerCase();
+    const term = (searchTerm || "").toLowerCase();
+    const techMatch = selectedTechnology
+      ? String(template.technology || "").toLowerCase() ===
+        String(selectedTechnology).toLowerCase()
+      : true;
+    return (name.includes(term) || description.includes(term)) && techMatch;
+  });
 
   if (loading) {
     return (
@@ -148,18 +152,13 @@ const Templates = ({ onNavigate, params = {} }) => {
         </div>
 
         <div className="flex gap-2">
-          <select
+          <input
+            type="text"
+            placeholder="Filtrar por tecnologia (ex: React)"
             value={selectedTechnology}
             onChange={(e) => handleTechnologyFilter(e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">Todas as tecnologias</option>
-            {technologies.map((tech) => (
-              <option key={tech.id} value={tech.id}>
-                {tech.icon} {tech.name}
-              </option>
-            ))}
-          </select>
+          />
 
           <Button variant="outline" className="flex items-center space-x-2">
             <Filter className="h-4 w-4" />
@@ -169,31 +168,7 @@ const Templates = ({ onNavigate, params = {} }) => {
       </div>
 
       {/* Technology Filter Pills */}
-      {technologies.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          <Badge
-            variant={selectedTechnology === "" ? "default" : "secondary"}
-            className="cursor-pointer"
-            onClick={() => handleTechnologyFilter("")}
-          >
-            Todos
-          </Badge>
-          {technologies.map((tech) => (
-            <Badge
-              key={tech.id}
-              variant={
-                selectedTechnology === tech.id.toString()
-                  ? "default"
-                  : "secondary"
-              }
-              className="cursor-pointer"
-              onClick={() => handleTechnologyFilter(tech.id.toString())}
-            >
-              {tech.icon} {tech.name} ({tech.templates_count})
-            </Badge>
-          ))}
-        </div>
-      )}
+      {/* technology pills removed (backend no longer exposes technologies) */}
 
       {/* Templates Grid */}
       {filteredTemplates.length > 0 ? (
@@ -203,7 +178,6 @@ const Templates = ({ onNavigate, params = {} }) => {
               key={template.id}
               template={template}
               onStartProject={handleStartProject}
-              onToggleFavorite={handleToggleFavorite}
               onExportMarkdown={handleExportMarkdown}
             />
           ))}
@@ -237,74 +211,6 @@ const Templates = ({ onNavigate, params = {} }) => {
         </div>
       )}
 
-      {/* Quick Stats */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          Estatísticas dos Templates
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">
-              {templates.length}
-            </div>
-            <div className="text-sm text-gray-500">Templates Totais</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-green-600">
-              {technologies.length}
-            </div>
-            <div className="text-sm text-gray-500">Tecnologias</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-purple-600">
-              {templates.filter((t) => t.is_favorited).length}
-            </div>
-            <div className="text-sm text-gray-500">Favoritos</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-orange-600">
-              {Math.round(
-                templates.reduce((sum, t) => sum + t.steps_count, 0) /
-                  templates.length
-              ) || 0}
-            </div>
-            <div className="text-sm text-gray-500">Etapas Médias</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Popular Templates */}
-      {templates.length > 0 && (
-        <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-lg p-6 text-white">
-          <h2 className="text-lg font-semibold mb-3">⭐ Templates Populares</h2>
-          <p className="text-green-100 mb-4">
-            Estes são os templates mais utilizados para acelerar o
-            desenvolvimento.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {templates
-              .sort((a, b) => b.steps_count - a.steps_count)
-              .slice(0, 3)
-              .map((template) => (
-                <div
-                  key={template.id}
-                  className="bg-white bg-opacity-20 rounded-lg p-4"
-                >
-                  <div className="flex items-center space-x-2 mb-2">
-                    <span className="text-lg">{template.technology.icon}</span>
-                    <span className="font-medium">{template.name}</span>
-                  </div>
-                  <p className="text-sm text-green-100 line-clamp-2">
-                    {template.description}
-                  </p>
-                  <div className="mt-2 text-xs text-green-200">
-                    {template.steps_count} etapas • {template.technology.name}
-                  </div>
-                </div>
-              ))}
-          </div>
-        </div>
-      )}
       {/* Create Template Modal */}
       <CreateTemplateModal
         isOpen={showCreateModal}

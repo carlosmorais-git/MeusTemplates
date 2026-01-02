@@ -2,24 +2,8 @@ from django.db import models
 from django.conf import settings
 
 
-class Technology(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    description = models.TextField()
-    icon = models.CharField(max_length=10, help_text="Emoji ou ícone representativo")
-    color = models.CharField(max_length=7, help_text="Cor em hexadecimal (#FF0000)")
-    documentation_url = models.URLField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        verbose_name_plural = "Technologies"
-        ordering = ['name']
-
-    def __str__(self):
-        return f"{self.icon} {self.name}"
-
-
 class Template(models.Model):
-    technology = models.ForeignKey(Technology, on_delete=models.CASCADE, related_name='templates')
+    technology = models.CharField(max_length=100)
     name = models.CharField(max_length=200)
     description = models.TextField()
     version = models.CharField(max_length=20, default="1.0")
@@ -27,13 +11,14 @@ class Template(models.Model):
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='created_templates')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    file_path = models.CharField(max_length=500, blank=True, null=True, help_text='Caminho local do arquivo do template (opcional)')
 
     class Meta:
         ordering = ['-created_at']
         unique_together = ['technology', 'name', 'version']
 
     def __str__(self):
-        return f"{self.technology.name} - {self.name} v{self.version}"
+        return f"{self.technology} - {self.name} v{self.version}"
 
 
 class TemplateStep(models.Model):
@@ -77,15 +62,3 @@ class CodeSnippet(models.Model):
     def __str__(self):
         return f"{self.language} - {self.template_step.question[:30]}"
 
-
-class Favorite(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='favorites')
-    template = models.ForeignKey(Template, on_delete=models.CASCADE, related_name='favorited_by')
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = ['user', 'template']
-        ordering = ['-created_at']
-
-    def __str__(self):
-        return f"{self.user.username} ❤️ {self.template.name}"

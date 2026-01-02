@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { Heart, Play, Download, Clock, User, CheckCircle } from "lucide-react";
+import { Play, Download, Clock, User, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 const TemplateCard = ({
   template,
   onStartProject,
-  onToggleFavorite,
   onExportMarkdown,
   showActions = true,
 }) => {
@@ -38,38 +37,22 @@ const TemplateCard = ({
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center space-x-3">
-          <div
-            className="w-10 h-10 rounded-lg flex items-center justify-center text-lg"
-            style={{ backgroundColor: `${template.technology.color}20` }}
-          >
-            {template.technology.icon}
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center text-sm bg-gray-100">
+            <span className="text-xs font-medium">{template.technology}</span>
           </div>
           <div>
             <h3 className="text-lg font-semibold text-gray-900 line-clamp-1">
               {template.name}
             </h3>
             <div className="flex items-center space-x-2 text-sm text-gray-500">
-              <span>{template.technology.name}</span>
+              <span>{template.technology}</span>
               <span>•</span>
               <span>v{template.version}</span>
             </div>
           </div>
         </div>
 
-        {showActions && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onToggleFavorite(template)}
-            className={template.is_favorited ? "text-red-500" : "text-gray-400"}
-          >
-            <Heart
-              className={`h-4 w-4 ${
-                template.is_favorited ? "fill-current" : ""
-              }`}
-            />
-          </Button>
-        )}
+        {/* Favoritos removidos do backend; botão ocultado */}
       </div>
 
       {/* Description */}

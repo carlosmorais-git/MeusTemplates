@@ -20,6 +20,7 @@ const Login = () => {
       const response = await apiService.login(username, password);
       if (response.ok) {
         navigate("/dashboard");
+        window.location.reload();
       } else {
         setError("Usuário ou senha inválidos.");
       }

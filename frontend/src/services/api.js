@@ -82,7 +82,7 @@ class ApiService {
     } catch {
       // ambiente sem document
     }
-    const response = await fetch(`${this.baseURL}api-auth/login/`, {
+    const response = await fetch(`${this.baseURL}auth/login/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -101,18 +101,17 @@ class ApiService {
   }
 
   async logout() {
-    const response = await fetch(`${this.baseURL}api-auth/logout/`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error("Logout failed");
+    // Use o helper `request` para incluir automaticamente o CSRF quando necessário
+    try {
+      const res = await this.request("auth/logout/", {
+        method: "POST",
+        body: JSON.stringify({}),
+      });
+      return res;
+    } catch (err) {
+      console.error("Logout failed:", err);
+      throw err;
     }
-    // Redirecionamento deixado no componente que chamou logout
-    return response;
   }
 
   async getCurrentUser() {
@@ -120,28 +119,9 @@ class ApiService {
   }
 
   // Tecnologias
-  async getTechnologies() {
-    return this.request("technologies/");
-  }
-
-  async createTechnologies(tech) {
-    return this.request("technologies/", {
-      method: "POST",
-      body: JSON.stringify(tech),
-    });
-  }
-
-  async getTechnology(id) {
-    return this.request(`technologies/${id}/`);
-  }
-
-  async getTechnologyTemplates(id) {
-    return this.request(`technologies/${id}/templates/`);
-  }
-
-  async getTechnologyRoadmap(id) {
-    return this.request(`technologies/${id}/roadmap/`);
-  }
+  // NOTE: `Technology` endpoints were removed from the backend during
+  // refactor. Templates now store `technology` as a plain string. Keep
+  // these helpers out to avoid accidental usage.
 
   // Templates
   async getTemplates(params = {}) {
@@ -149,14 +129,11 @@ class ApiService {
     return this.request(`templates/${queryString ? "?" + queryString : ""}`);
   }
 
+  // Since `Technology` endpoints were removed from the backend,
+  // Technology endpoints removed from the backend; do not expose them.
+
   async getTemplate(id) {
     return this.request(`templates/${id}/`);
-  }
-
-  async favoriteTemplate(id) {
-    return this.request(`templates/${id}/favorite/`, {
-      method: "POST",
-    });
   }
 
   async startProject(templateId, projectData) {
@@ -225,32 +202,9 @@ class ApiService {
     return response.blob();
   }
 
-  // Progresso do usuário
-  async getUserProgress() {
-    return this.request("progress/");
-  }
+  // Progress endpoints removed from backend; do not expose here.
 
-  async getUserDashboard() {
-    return this.request("progress/dashboard/");
-  }
-
-  // Favoritos
-  async getFavorites() {
-    return this.request("favorites/");
-  }
-
-  async addFavorite(templateId) {
-    return this.request("favorites/", {
-      method: "POST",
-      body: JSON.stringify({ template_id: templateId }),
-    });
-  }
-
-  async removeFavorite(favoriteId) {
-    return this.request(`favorites/${favoriteId}/`, {
-      method: "DELETE",
-    });
-  }
+  // Favorites removed from backend; do not expose here.
 }
 
 // Instância singleton da API

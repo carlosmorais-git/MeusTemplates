@@ -1,14 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  TrendingUp,
-  BookOpen,
-  FolderOpen,
-  Star,
-  Clock,
-  Award,
-  Target,
-  Zap,
-} from "lucide-react";
+import { BookOpen, FolderOpen, Award, Target, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import apiService from "../services/api";
@@ -23,11 +14,31 @@ const Dashboard = ({ onNavigate }) => {
 
   const loadDashboardData = async () => {
     try {
-      const data = await apiService.getUserDashboard();
-      setDashboardData(data);
+      // Backend removed the dashboard/progress endpoints. Build a minimal
+      // dashboard from projects endpoint instead.
+      const projectsData = await apiService.getProjects({});
+      const projectsList = projectsData.results || projectsData || [];
+
+      const totalProjects = projectsData.count || projectsList.length;
+      const uniqueTechs = [
+        ...new Set(
+          projectsList.map((p) => String(p.template?.technology || ""))
+        ),
+      ].filter((t) => t);
+
+      setDashboardData({
+        stats: {
+          total_projects: totalProjects,
+          completed_projects: projectsList.filter(
+            (p) => p.status === "completed"
+          ).length,
+          technologies_used: uniqueTechs.length,
+          completion_rate: 0,
+        },
+        recent_projects: projectsList.slice(0, 5),
+      });
     } catch (error) {
       console.error("Erro ao carregar dashboard:", error);
-      // Dados mock para demonstração
       setDashboardData({
         stats: {
           total_projects: 0,
@@ -35,9 +46,7 @@ const Dashboard = ({ onNavigate }) => {
           technologies_used: 0,
           completion_rate: 0,
         },
-        progress_by_technology: [],
         recent_projects: [],
-        favorite_templates: [],
       });
     } finally {
       setLoading(false);
@@ -52,8 +61,7 @@ const Dashboard = ({ onNavigate }) => {
     );
   }
 
-  const { stats, progress_by_technology, recent_projects, favorite_templates } =
-    dashboardData;
+  const { stats, recent_projects } = dashboardData;
 
   const statCards = [
     {
@@ -77,13 +85,7 @@ const Dashboard = ({ onNavigate }) => {
       color: "bg-purple-500",
       change: "Diversificando conhecimento",
     },
-    {
-      title: "Templates Favoritos",
-      value: favorite_templates.length,
-      icon: Star,
-      color: "bg-yellow-500",
-      change: "Seus preferidos",
-    },
+    // Favorites removed
   ];
 
   return (
@@ -133,74 +135,7 @@ const Dashboard = ({ onNavigate }) => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Progresso por Tecnologia */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Progresso por Tecnologia
-            </h2>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onNavigate("progress")}
-            >
-              Ver Detalhes
-            </Button>
-          </div>
-
-          {progress_by_technology.length > 0 ? (
-            <div className="space-y-4">
-              {progress_by_technology.map((progress) => (
-                <div
-                  key={progress.id}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex items-center space-x-3">
-                    <div
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-sm"
-                      style={{
-                        backgroundColor: `${progress.technology.color}20`,
-                      }}
-                    >
-                      {progress.technology.icon}
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">
-                        {progress.technology.name}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        Nível {progress.level}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-900">
-                      {progress.projects_completed} projetos
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {progress.total_hours}h estudadas
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">
-                Comece seu primeiro projeto para ver o progresso!
-              </p>
-              <Button
-                variant="outline"
-                size="sm"
-                className="mt-2"
-                onClick={() => onNavigate("technologies")}
-              >
-                Explorar Tecnologias
-              </Button>
-            </div>
-          )}
-        </div>
+        {/* Progresso removido */}
 
         {/* Projetos Recentes */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -225,13 +160,10 @@ const Dashboard = ({ onNavigate }) => {
                   className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
                 >
                   <div className="flex items-center space-x-3">
-                    <div
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-sm"
-                      style={{
-                        backgroundColor: `${project.template.technology.color}20`,
-                      }}
-                    >
-                      {project.template.technology.icon}
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm bg-gray-100">
+                      <span className="text-xs font-medium">
+                        {project.template.technology}
+                      </span>
                     </div>
                     <div>
                       <p className="font-medium text-gray-900 text-sm">
@@ -255,9 +187,7 @@ const Dashboard = ({ onNavigate }) => {
                         ? "Em Progresso"
                         : "Rascunho"}
                     </Badge>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {project.progress_percentage}%
-                    </p>
+                    {/* progress percentage removed */}
                   </div>
                 </div>
               ))}
@@ -279,81 +209,6 @@ const Dashboard = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* Templates Favoritos */}
-      {favorite_templates.length > 0 && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Templates Favoritos
-            </h2>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onNavigate("favorites")}
-            >
-              Ver Todos
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {favorite_templates.slice(0, 3).map((template) => (
-              <div key={template.id} className="p-4 bg-gray-50 rounded-lg">
-                <div className="flex items-center space-x-3 mb-2">
-                  <div
-                    className="w-8 h-8 rounded-lg flex items-center justify-center text-sm"
-                    style={{
-                      backgroundColor: `${template.technology.color}20`,
-                    }}
-                  >
-                    {template.technology.icon}
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900 text-sm">
-                      {template.name}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {template.technology.name}
-                    </p>
-                  </div>
-                </div>
-                <p className="text-xs text-gray-600 line-clamp-2">
-                  {template.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Dicas e Motivação */}
-      <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 text-white">
-        <div className="flex items-center space-x-3 mb-3">
-          <Award className="h-6 w-6" />
-          <h2 className="text-lg font-semibold">Continue Aprendendo!</h2>
-        </div>
-        <p className="text-blue-100 mb-4">
-          Cada projeto completado é um passo a mais na sua jornada de
-          aprendizado. Use os templates para manter a consistência e acelerar
-          seu desenvolvimento.
-        </p>
-        <div className="flex space-x-3">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => onNavigate("technologies")}
-          >
-            Explorar Tecnologias
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="text-white border-white hover:bg-white hover:text-blue-600"
-            onClick={() => onNavigate("templates")}
-          >
-            Ver Templates
-          </Button>
-        </div>
-      </div>
     </div>
   );
 };

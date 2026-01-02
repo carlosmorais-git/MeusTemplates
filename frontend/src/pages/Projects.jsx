@@ -114,10 +114,8 @@ const Projects = ({ onNavigate, params = {} }) => {
 ## Informações do Projeto
 - **Nome:** ${project.name}
 - **Descrição:** ${project.description}
-- **Template:** ${project.template.name}
-- **Tecnologia:** ${project.template.technology.icon} ${
-      project.template.technology.name
-    }
+    - **Template:** ${project.template.name}
+    - **Tecnologia:** ${project.template.technology}
 - **Status:** ${project.status}
 - **Progresso:** ${project.progress}%
 - **Criado em:** ${new Date(project.created_at).toLocaleDateString("pt-BR")}
@@ -194,7 +192,7 @@ ${step.notes ? `\n**Notas:** ${step.notes}` : ""}
     (project) =>
       project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      project.template.technology.name
+      String(project.template.technology || "")
         .toLowerCase()
         .includes(searchTerm.toLowerCase())
   );
@@ -214,9 +212,7 @@ ${step.notes ? `\n**Notas:** ${step.notes}` : ""}
       <div className="flex items-center justify-between content_title_screen_mobile">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Meus Projetos</h1>
-          <p className="text-gray-600">
-            Gerencie seus projetos e acompanhe o progresso
-          </p>
+          <p className="text-gray-600">Gerencie seus projetos</p>
         </div>
         <Button onClick={() => onNavigate("templates")}>
           <Plus className="h-4 w-4 mr-2" />
@@ -255,9 +251,7 @@ ${step.notes ? `\n**Notas:** ${step.notes}` : ""}
                   <h3 className="font-medium text-gray-900 line-clamp-1">
                     {project.name}
                   </h3>
-                  <span className="text-lg">
-                    {project.template.technology.icon}
-                  </span>
+                  <span className="text-lg">{project.template.technology}</span>
                 </div>
 
                 <p className="text-sm text-gray-600 line-clamp-2 mb-3">
@@ -268,17 +262,6 @@ ${step.notes ? `\n**Notas:** ${step.notes}` : ""}
                   <Badge className={getStatusColor(project.status)}>
                     {getStatusText(project.status)}
                   </Badge>
-                  <span className="text-sm text-gray-500">
-                    {project.progress_percentage}%
-                  </span>
-                </div>
-
-                {/* Progress Bar */}
-                <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-                  <div
-                    className="bg-blue-600 h-2 rounded-full transition-all"
-                    style={{ width: `${project.progress_percentage}%` }}
-                  ></div>
                 </div>
               </div>
             ))}
@@ -310,11 +293,7 @@ ${step.notes ? `\n**Notas:** ${step.notes}` : ""}
                       {getStatusText(selectedProject.status)}
                     </Badge>
                     <span className="text-sm text-gray-500">
-                      {selectedProject.template.technology.icon}{" "}
-                      {selectedProject.template.technology.name}
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      {selectedProject.progress_percentage}% concluído
+                      {selectedProject.template.technology}
                     </span>
                   </div>
                 </div>
@@ -331,19 +310,7 @@ ${step.notes ? `\n**Notas:** ${step.notes}` : ""}
                 </div>
               </div>
 
-              {/* Progress Bar */}
-              <div className="mb-6">
-                <div className="flex justify-between text-sm text-gray-600 mb-1">
-                  <span>Progresso</span>
-                  <span>{selectedProject.progress_percentage}%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-3">
-                  <div
-                    className="bg-blue-600 h-3 rounded-full transition-all"
-                    style={{ width: `${selectedProject.progress_percentage}%` }}
-                  ></div>
-                </div>
-              </div>
+              {/* Progress UI removed */}
 
               {/* Steps Checklist */}
               <div className="space-y-4">
